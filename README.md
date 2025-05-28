@@ -1,4 +1,4 @@
-# smartsaha_pa
+# Smart Saha Precision Agriculture Platform
 Smart Saha with django Backend:
 
 requirements.txt holds all the libraries in python that need to be installed by pip.
