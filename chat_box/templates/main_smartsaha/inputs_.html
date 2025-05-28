@@ -1,0 +1,523 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inputs | FARARANO MIRINDRA</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <!-- Calcite Components -->
+    <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/2.13.2/calcite.css">
+    <script type="module" src="https://js.arcgis.com/calcite-components/2.13.2/calcite.esm.js"></script>
+
+    <!-- ArcGIS Maps SDK -->
+    <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/dark/main.css">
+    <script src="https://js.arcgis.com/4.31/"></script>
+
+    <!-- Map Components -->
+    <script type="module" src="https://js.arcgis.com/map-components/4.31/arcgis-map-components.esm.js"></script>
+
+    <!-- Custom Scripts -->
+    <script defer src="{% static 'inp_map_loader.js' %}"></script>
+    
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #4CAF50, #2196F3);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, #3d8b40, #0d7ad1);
+        }
+        
+        /* Card hover effects */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        /* Glass morphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        /* Focus effects for inputs */
+        .input-focus {
+            transition: all 0.3s ease;
+        }
+        .input-focus:focus {
+            border-color: transparent;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        /* Button effects */
+        .btn-pulse {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-pulse:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%, -50%);
+            transform-origin: 50% 50%;
+        }
+        .btn-pulse:hover:after {
+            animation: ripple 1s ease-out;
+        }
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+        
+        /* Map container animation */
+        .map-container {
+            position: relative;
+            overflow: hidden;
+        }
+        .map-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(76, 175, 80, 0.1), rgba(33, 150, 243, 0.1));
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        /* Floating labels */
+        .floating-label {
+            position: relative;
+        }
+        .floating-label input {
+            height: 3.5rem;
+            padding-top: 1.5rem;
+        }
+        .floating-label label {
+            position: absolute;
+            top: 0.7rem;
+            left: 1rem;
+            transition: all 0.2s ease;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .floating-label input:focus + label,
+        .floating-label input:not(:placeholder-shown) + label {
+            top: 0.25rem;
+            left: 0.75rem;
+            font-size: 0.75rem;
+            opacity: 1;
+            font-weight: 600;
+            color: #3b82f6;
+        }
+        
+        /* Loading button animation */
+        .loading {
+            position: relative;
+        }
+        .loading::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            to {
+                left: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen">
+    <!-- Navbar -->
+    <header class="sticky top-0 z-50 h-16 bg-gradient-to-r from-green-600 via-green-500 to-blue-500 text-white flex items-center justify-between px-6 md:px-12 shadow-lg">
+        <a href="https://smartsaha.vercel.app" class="flex items-center space-x-2">
+            <img src="{%static 'images/logo.png' %}" alt="FARARANO_MIRINDRA" class="w-12 h-12 rounded-full shadow-md border-2 border-white transform hover:scale-110 transition-all duration-300">
+            <span class="hidden md:inline text-xl font-bold tracking-wider">Smart Saha</span>
+        </a>
+        
+        <ul class="hidden md:flex space-x-4 lg:space-x-8 text-base lg:text-lg font-medium">
+            <li><a href="{% url 'soil' %}" class="hover:text-white relative py-2 group">
+                <i class="fas fa-leaf mr-1"></i> Soil
+                <span class="absolute left-0 bottom-0 h-0.5 w-0 bg-white transition-all duration-300 group-hover:w-full"></span>
+            </a></li>
+            <li><a href="{% url 'main' %}" class="hover:text-white relative py-2 group">
+                <i class="fas fa-chart-line mr-1"></i> Dashboard
+                <span class="absolute left-0 bottom-0 h-0.5 w-0 bg-white transition-all duration-300 group-hover:w-full"></span>
+            </a></li>
+            <li><a href="{% url 'ipoly' %}" class="hover:text-white relative py-2 group">
+                <i class="fas fa-draw-polygon mr-1"></i> Input Polygon
+                <span class="absolute left-0 bottom-0 h-0.5 w-0 bg-white transition-all duration-300 group-hover:w-full"></span>
+            </a></li>
+            <li><a href="" class="hover:text-white relative py-2 group font-bold">
+                <i class="fas fa-map-marker-alt mr-1"></i> Input Point
+                <span class="absolute left-0 bottom-0 h-0.5 w-full bg-white transition-all duration-300"></span>
+            </a></li>
+            <li><a href="{% url 'agai' %}" class="hover:text-white relative py-2 group">
+                <i class="fas fa-robot mr-1"></i> Ag AI
+                <span class="absolute left-0 bottom-0 h-0.5 w-0 bg-white transition-all duration-300 group-hover:w-full"></span>
+            </a></li>
+            <li><a href="https://smartsaha.vercel.app/contact.html" class="hover:text-white relative py-2 group">
+                <i class="fas fa-envelope mr-1"></i> Contact
+                <span class="absolute left-0 bottom-0 h-0.5 w-0 bg-white transition-all duration-300 group-hover:w-full"></span>
+            </a></li>
+        </ul>
+
+        <!-- Mobile Menu Button -->
+        <button id="menu-toggle" class="md:hidden focus:outline-none p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition-all duration-300">
+            <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+        </button>
+    </header>
+
+    <!-- Mobile Menu -->
+    <nav id="mobile-menu" class="hidden md:hidden bg-gradient-to-r from-green-600 to-blue-500 text-white py-4 shadow-md z-40 absolute w-full animate__animated animate__fadeIn">
+        <ul class="flex flex-col items-center space-y-4 text-base">
+            <li><a href="{% url 'soil' %}" class="flex items-center hover:bg-white hover:bg-opacity-20 py-2 px-4 rounded-lg w-4/5 transition-all">
+                <i class="fas fa-leaf mr-3 w-6 text-center"></i> Soil
+            </a></li>
+            <li><a href="{% url 'main' %}" class="flex items-center hover:bg-white hover:bg-opacity-20 py-2 px-4 rounded-lg w-4/5 transition-all">
+                <i class="fas fa-chart-line mr-3 w-6 text-center"></i> Dashboard
+            </a></li>
+            <li><a href="{% url 'ipoly' %}" class="flex items-center hover:bg-white hover:bg-opacity-20 py-2 px-4 rounded-lg w-4/5 transition-all">
+                <i class="fas fa-draw-polygon mr-3 w-6 text-center"></i> Input Polygon
+            </a></li>
+            <li><a href="" class="flex items-center bg-white bg-opacity-20 py-2 px-4 rounded-lg w-4/5 transition-all">
+                <i class="fas fa-map-marker-alt mr-3 w-6 text-center"></i> Input Point
+            </a></li>
+            <li><a href="{% url 'agai' %}" class="flex items-center hover:bg-white hover:bg-opacity-20 py-2 px-4 rounded-lg w-4/5 transition-all">
+                <i class="fas fa-robot mr-3 w-6 text-center"></i> Agronomist AI
+            </a></li>
+            <li><a href="https://smartsaha.vercel.app/contact.html" class="flex items-center hover:bg-white hover:bg-opacity-20 py-2 px-4 rounded-lg w-4/5 transition-all">
+                <i class="fas fa-envelope mr-3 w-6 text-center"></i> Contact
+            </a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Input Form Section -->
+        <section class="w-full md:w-1/2 h-full p-4 md:p-6 overflow-auto bg-gradient-to-br from-green-50 via-blue-50 to-white">
+            <!-- Page Header -->
+            <div class="text-center mb-6 animate__animated animate__fadeIn">
+                <h1 class="text-3xl font-bold gradient-text">Add New Parcel Point</h1>
+                <p class="text-gray-600 mt-2">Enter coordinates and details of your new parcel location</p>
+            </div>
+            
+            <!-- User Info -->
+            <div id="user_id" class="bg-white rounded-xl shadow-md p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-2 card-hover animate__animated animate__fadeInUp">
+                <div class="flex items-center">
+                    <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h1 id="username_" class="font-bold text-base sm:text-lg md:text-xl gradient-text"></h1>
+                </div>
+                <button id="logout" class="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-bold py-2 px-4 rounded-lg shadow transition duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto flex items-center justify-center">
+                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                </button>
+            </div>
+
+            <!-- Coordinates Input Form -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-6 card-hover animate__animated animate__fadeInUp animate__delay-1s">
+                <div class="flex items-center mb-6">
+                    <div class="rounded-full bg-gradient-to-r from-green-400 to-blue-500 p-3 mr-4">
+                        <i class="fas fa-map-marker-alt text-white text-xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold gradient-text">Enter Coordinates</h2>
+                </div>
+                
+                <div class="space-y-5">
+                    <div class="floating-label">
+                        <input type="number" id="long" step="0.00001" placeholder=" " 
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 input-focus focus:outline-none">
+                        <label for="long" class="text-gray-500">
+                            <i class="fas fa-arrows-alt-h text-green-500 mr-2"></i>Longitude
+                        </label>
+                    </div>
+                    
+                    <div class="floating-label">
+                        <input type="number" id="lat" step="0.00001" placeholder=" " 
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 input-focus focus:outline-none">
+                        <label for="lat" class="text-gray-500">
+                            <i class="fas fa-arrows-alt-v text-blue-500 mr-2"></i>Latitude
+                        </label>
+                    </div>
+                    
+                    <div class="floating-label">
+                        <input type="text" id="parcel_owner" placeholder=" " 
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 input-focus focus:outline-none">
+                        <label for="parcel_owner" class="text-gray-500">
+                            <i class="fas fa-user text-purple-500 mr-2"></i>Owner Name
+                        </label>
+                    </div>
+                    
+                    <div class="floating-label">
+                        <input type="text" id="parcel_name" placeholder=" " 
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 input-focus focus:outline-none">
+                        <label for="parcel_name" class="text-gray-500">
+                            <i class="fas fa-tag text-amber-500 mr-2"></i>Parcel Name
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coordinate Selection Methods -->
+            <div class="flex flex-col lg:flex-row gap-4 mb-6 animate__animated animate__fadeInUp animate__delay-2s">
+                <div class="bg-white rounded-xl shadow-md p-4 flex-1 card-hover">
+                    <div class="flex items-center mb-3">
+                        <i class="fas fa-mouse-pointer text-blue-500 text-xl mr-3"></i>
+                        <h3 class="font-semibold text-gray-700">Click on Map</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm">Click directly on the map to set coordinates automatically.</p>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md p-4 flex-1 card-hover">
+                    <div class="flex items-center mb-3">
+                        <i class="fas fa-crosshairs text-green-500 text-xl mr-3"></i>
+                        <h3 class="font-semibold text-gray-700">Use Current Location</h3>
+                    </div>
+                    <button id="use_location" class="w-full mt-2 py-2 px-4 bg-gradient-to-r from-green-400 to-green-600 text-white rounded-lg hover:from-green-500 hover:to-green-700 transition duration-300 btn-pulse flex items-center justify-center">
+                        <i class="fas fa-location-arrow mr-2"></i> Get My Location
+                    </button>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="animate__animated animate__fadeInUp animate__delay-3s">
+                <button id="submit_point" class="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white py-3 px-4 rounded-lg shadow-lg transition duration-300 transform hover:scale-[1.02] flex items-center justify-center text-lg btn-pulse">
+                    <i class="fas fa-plus-circle mr-2"></i> Submit Point as Parcel
+                </button>
+                
+                <div class="flex justify-center mt-6">
+                    <a href="{% url 'ipoly' %}"class="text-blue-500 hover:text-blue-700 flex items-center">
+                        <i class="fas fa-draw-polygon mr-2"></i> Need to add a polygon instead?
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Map Section -->
+        <div class="w-full md:w-1/2 h-[40vh] md:h-screen relative map-container animate__animated animate__fadeIn">
+            <!-- Map loading overlay -->
+            <div id="map-loading" class="absolute inset-0 bg-white bg-opacity-80 z-10 flex items-center justify-center">
+                <div class="text-center">
+                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+                    <p class="text-blue-500 font-semibold">Loading map...</p>
+                </div>
+            </div>
+            
+            <div id="viewDiv" class="w-full h-full"></div>
+            
+            <!-- Map controls overlay -->
+            <div class="absolute bottom-5 right-5 flex flex-col space-y-2">
+                <button id="zoomIn" class="bg-white text-blue-500 p-2 rounded-full shadow-lg hover:bg-blue-50 transition-all duration-300">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button id="zoomOut" class="bg-white text-blue-500 p-2 rounded-full shadow-lg hover:bg-blue-50 transition-all duration-300">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button id="recenter" class="bg-white text-blue-500 p-2 rounded-full shadow-lg hover:bg-blue-50 transition-all duration-300">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification System -->
+    <div id="toast-container" class="fixed top-20 right-5 z-50 flex flex-col space-y-2"></div>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="hidden fixed bottom-5 left-5 bg-gradient-to-r from-green-500 to-blue-500 text-white p-3 rounded-full shadow-lg hover:from-green-600 hover:to-blue-600 transition duration-300 z-50">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById("menu-toggle");
+        const mobileMenu = document.getElementById("mobile-menu");
+
+        menuToggle.addEventListener("click", () => {
+            mobileMenu.classList.toggle("hidden");
+        });
+
+        // Back to Top Button
+        const backToTop = document.getElementById("backToTop");
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.remove("hidden");
+            } else {
+                backToTop.classList.add("hidden");
+            }
+        });
+
+        backToTop.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+        
+        // Map loading simulation
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                const mapLoading = document.getElementById("map-loading");
+                if (mapLoading) {
+                    mapLoading.classList.add("animate__animated", "animate__fadeOut");
+                    setTimeout(() => {
+                        mapLoading.style.display = "none";
+                    }, 500);
+                }
+            }, 1500);
+            
+            // Add event listeners to map control buttons
+            const zoomInBtn = document.getElementById("zoomIn");
+            const zoomOutBtn = document.getElementById("zoomOut");
+            const recenterBtn = document.getElementById("recenter");
+            
+            if (zoomInBtn && window.view) {
+                zoomInBtn.addEventListener("click", () => {
+                    window.view.zoom += 1;
+                });
+            }
+            
+            if (zoomOutBtn && window.view) {
+                zoomOutBtn.addEventListener("click", () => {
+                    window.view.zoom -= 1;
+                });
+            }
+            
+            if (recenterBtn && window.view) {
+                recenterBtn.addEventListener("click", () => {
+                    // Recenter map
+                    showToast("Recentering map to default view", "info");
+                });
+            }
+        });
+        
+        // Toast notification function
+        function showToast(message, type = "success") {
+            const toastContainer = document.getElementById("toast-container");
+            
+            const toast = document.createElement("div");
+            toast.className = `animate__animated animate__fadeInRight max-w-xs p-4 rounded-lg shadow-md flex items-center space-x-2 ${
+                type === "success" ? "bg-green-500" :
+                type === "error" ? "bg-red-500" :
+                type === "warning" ? "bg-yellow-500" : "bg-blue-500"
+            } text-white`;
+            
+            const icon = document.createElement("i");
+            icon.className = `fas ${
+                type === "success" ? "fa-check-circle" :
+                type === "error" ? "fa-exclamation-circle" :
+                type === "warning" ? "fa-exclamation-triangle" : "fa-info-circle"
+            }`;
+            
+            const text = document.createElement("span");
+            text.textContent = message;
+            
+            toast.appendChild(icon);
+            toast.appendChild(text);
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.replace("animate__fadeInRight", "animate__fadeOutRight");
+                setTimeout(() => {
+                    toastContainer.removeChild(toast);
+                }, 500);
+            }, 3000);
+        }
+        
+        // Simulate button loading state
+        document.getElementById("submit_point")?.addEventListener("click", function() {
+            this.classList.add("loading");
+            this.disabled = true;
+            const originalText = this.innerHTML;
+            this.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Submitting...`;
+            
+            // Simulate submission
+            setTimeout(() => {
+                this.classList.remove("loading");
+                this.disabled = false;
+                this.innerHTML = originalText;
+                showToast("Parcel point submitted successfully!", "success");
+            }, 1500);
+        });
+        
+        // Get current location button
+        document.getElementById("use_location")?.addEventListener("click", function() {
+            this.classList.add("loading");
+            this.disabled = true;
+            const originalText = this.innerHTML;
+            this.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Getting Location...`;
+            
+            // Simulate geolocation
+            setTimeout(() => {
+                this.classList.remove("loading");
+                this.disabled = false;
+                this.innerHTML = originalText;
+                
+                // Set random coordinates (replace with actual geolocation)
+                document.getElementById("long").value = "47.5079";
+                document.getElementById("lat").value = "-18.8792";
+                
+                showToast("Current location obtained", "success");
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
