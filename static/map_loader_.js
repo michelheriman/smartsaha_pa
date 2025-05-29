@@ -1118,8 +1118,8 @@ require([
     } else {start = '19890701'};
 
     const api_link = `https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M,T2MDEW,T2MWET,TS,T2M_RANGE,T2M_MAX,T2M_MIN,PRECTOTCORR,EVLAND&community=RE&longitude=${longitude}&latitude=${latitude}&start=${start}&end=${end}&format=JSON`;
-    response = await fetch(api_link);
-    jsondata = await response.json();
+    let response = await fetch(api_link);
+    let jsondata = await response.json();
     let fetchedData = [];
         fetchedData = Object.entries(jsondata.properties.parameter).map(([key, values]) => ({
             date: key,
