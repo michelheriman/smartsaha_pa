@@ -27,7 +27,7 @@ urlpatterns = [
     #path('supabase-proxy/', views.supabase_data_proxy, name='supabase_proxy'),
     path("signin/", views.sign_in),
     #path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
-    path("signup/", views.sign_up),
+    path("signup/", views.sign_up, name = 'signup'),
     path("dashboard/", views.main_dashboard, name = 'home'),
     path('', views.main_dashboard, name = 'main'),
     path('soil/', views.soil_dashboard, name = 'soil'),
