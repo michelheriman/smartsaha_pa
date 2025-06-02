@@ -772,8 +772,8 @@ require([
         container.appendChild(span);
 
         async function clim_fetcher() {
-          response = await fetch(api);
-          jsondata = await response.json();
+          let response = await fetch(api);
+          let jsondata = await response.json();
           let fetchedData = [];
           fetchedData = Object.entries(jsondata.properties.parameter).map(([key, values]) => ({
                 date: key,
