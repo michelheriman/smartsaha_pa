@@ -75,7 +75,7 @@ require([ "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer","esri/res
         // Convert to GeoJSON format
         let n_parcels_pts = data.length;
         //console.log(n_parcels_pts);
-        if (n_parcels_pts >= 10) { 
+        if (n_parcels_pts >= 3) { 
             alert("You have the limit of parcels inputs for gps points");
             window.location.href = window.location.origin + "/dashboard/";
         }
