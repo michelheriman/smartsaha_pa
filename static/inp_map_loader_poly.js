@@ -81,7 +81,7 @@ require([
         // Convert to GeoJSON format
         let n_parcels_pts = data.length;
         //console.log(n_parcels_pts);
-        if (n_parcels_pts >= 5) { 
+        if (n_parcels_pts >= 2) { 
             alert("You have the limit of parcels inputs for parcels");
             //window.location.href = "./index.html";
             window.location.href = window.location.origin + "/dashboard/";
