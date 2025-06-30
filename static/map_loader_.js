@@ -801,8 +801,8 @@ require([
             let bilan =  summer(arr_prec) - summer(land_ev);
             let soil_moisture = calculateMean(soil_moist);
             const status = document.createElement("p");
-            if (soil_moisture >= 0.4) {
-              status.textContent = `the parcel has water excedent, no water stress detected, the soil humidity is ${Math.round(soil_moisture * 100 * 10000)/10000} %`;
+            if (bilan >= 0.1) {
+              status.textContent = `the parcel has water excedent, no water stress detected, the soil humidity is ${Math.round(soil_moisture * 100 * 10000)/10000} % and the excedent is ${bilan} (mm)`;
               container.appendChild(status);
 
             }
