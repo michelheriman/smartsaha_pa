@@ -16,10 +16,10 @@ import os
 import dj_database_url
 
 
-SUPABASE_URL = config('SUPABASE_URL')
-SUPABASE_KEY = config('SUPABASE_KEY')
-API_KEY = config('API_KEY')
-DATABASE_URL= config('DATABASE_URL')
+SUPABASE_URL =  "https://zfbvbizomnkhcalamgrr.supabase.co" #config('SUPABASE_URL')
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmYnZiaXpvbW5raGNhbGFtZ3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkyMDgxNzAsImV4cCI6MjA1NDc4NDE3MH0.HYaKDX30CUF-nfsBg6ERGxrx3RuMTqNDWLZQ_G1uevg" #config('SUPABASE_KEY')
+API_KEY = "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"#config('API_KEY')
+DATABASE_URL= "postgresql://postgres.zfbvbizomnkhcalamgrr:Winneranthem11!@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres" #config('DATABASE_URL')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
