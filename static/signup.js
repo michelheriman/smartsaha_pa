@@ -2,7 +2,6 @@
 
 //load from supabase this need to migrate in .env
 let apilink_ = window.location.origin + "/apikey/";
-console.log(apilink_);
 
 async function f() {
   const response = await fetch(apilink_); //error here because of url conflict
