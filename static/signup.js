@@ -43,7 +43,7 @@ document.getElementById('submit_').addEventListener('click', async (e) => {
     } else {
       alert('Sign-up successful! Please check your email for confirmation.');
       //window.location.href = './signin.html';
-      window.location.href = window.location.origin + 'signin/';
+      window.location.href = window.location.origin + '/signin/';
 
     }
 
