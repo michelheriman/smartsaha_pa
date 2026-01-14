@@ -19,7 +19,7 @@ require([ "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer","esri/res
             }
         const data_ = await response.json();
         //console.log(data_.supabaseurl, data_.supabasekey);
-        const supabase_ = supabase.createClient(data_.supabaseurl, data_.supabasekey);
+        const supabase_ = window.supabase.createClient(data_.supabaseurl, data_.supabasekey);
         async function checker() {
         const session = await supabase_.auth.getSession();
         if (!session.data.session) {
