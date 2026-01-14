@@ -33,6 +33,6 @@ document.getElementById("submit_").addEventListener("click", async (e) => {
         throw new Error('Network response was not ok');
         }
     const data_ = await response.json();
-    const supabase_ = supabase.createClient(data_.supabaseurl, data_.supabasekey);
+    const supabase_ = window.supabase.createClient(data_.supabaseurl, data_.supabasekey);
     await signIn(email, password, supabase_);
   });
