@@ -10,7 +10,7 @@ async function f() {
         }
   const data_ = await response.json();
   
-  const supabase_ = supabase.createClient(data_.supabaseurl, data_.supabasekey);
+  const supabase_ = window.supabase.createClient(data_.supabaseurl, data_.supabasekey);
 
 // Handle sign-up form submission
 document.getElementById('submit_').addEventListener('click', async (e) => {
